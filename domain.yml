@@ -1,53 +1,62 @@
 slots:
-  person:
-    type: text
-  date:
-    type: text
-  time:
-    type: text
+  user:
+      type: unfeaturized
+  name:
+      type: unfeaturized
+  n_rooms:
+      type: unfeaturized
+  level:
+      type: unfeaturized
+      initial_value: 0
+  weapons:
+      type: list
+      initial_value: []
+  current_room:
+      type: unfeaturized
+      initial_value: 0
+  next_action:
+      type: unfeaturized
+  direction:
+      type: unfeaturized
+  fight_with:
+      type: unfeaturized
 
 intents:
   - greet
   - affirm
   - deny
-  - inform_person
-  - inform_day
-  - inform_time
+  - explore
+  - move
+  - fight
+  
+entities:
+  - user
+  - name
+  - n_rooms
+  - level
+  - weapons
+  - current_room
+  - next_action
+  - direction
+  - fight_with
   
 actions:
   - utter_greet
-  - utter_wh_person
-  - utter_wh_day
-  - utter_all_day
-  - utter_wh_time
-  - utter_yn_correct_day
-  - utter_yn_correct_time
-  - utter_inform
+  - action_generate_labyrinth
+  - utter_next_action
+  - utter_lose
+  - action_enter_room
+  - action_move
 
 templates:
   utter_greet:
-  - text: "Let’s make an appointment."
+  - text: "Welcome to the {name}! To win the game, you will have to survive the {n_rooms} rooms and find the exit. To move, just specify where you want to go, for example left, right, forward, or say the name of a room or object. Be careful, you may find monsters, but also treasures! You can always search the room before you enter it. Any object you find can later be used to fight. Good luck!"
   
-  utter_wh_person:
-  - text: "Who are you meeting with?"
+  utter_next_action:
+  - text: "What do you want to do?"
   
-  utter_wh_day:
-  - text: "On which day is your meeting?"
-  
-  utter_all_day:
-  - text: "Will it take the whole day?"
-  
-  utter_wh_time:
-  - text: "What time is your meeting?"
-  
-  utter_yn_correct_day:
-  - text: "Do you want me to create an appointment with {person} on {date} for the whole day?"
-  
-  utter_yn_correct_time:
-  - text: "Do you want me to create an appointment with {person} on {date} at {time}?"
-  
-  utter_inform:
-  - text: "Your appointment has been created!"
+  utter_lose:
+  - text: "Oh no, it looks like you have lost :("
       
 session_config:
   session_expiration_time: 60
