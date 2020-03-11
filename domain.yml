@@ -1,0 +1,54 @@
+slots:
+  person:
+    type: text
+  date:
+    type: text
+  time:
+    type: text
+
+intents:
+  - greet
+  - affirm
+  - deny
+  - inform_person
+  - inform_day
+  - inform_time
+  
+actions:
+  - utter_greet
+  - utter_wh_person
+  - utter_wh_day
+  - utter_all_day
+  - utter_wh_time
+  - utter_yn_correct_day
+  - utter_yn_correct_time
+  - utter_inform
+
+templates:
+  utter_greet:
+  - text: "Let’s make an appointment."
+  
+  utter_wh_person:
+  - text: "Who are you meeting with?"
+  
+  utter_wh_day:
+  - text: "On which day is your meeting?"
+  
+  utter_all_day:
+  - text: "Will it take the whole day?"
+  
+  utter_wh_time:
+  - text: "What time is your meeting?"
+  
+  utter_yn_correct_day:
+  - text: "Do you want me to create an appointment with {person} on {date} for the whole day?"
+  
+  utter_yn_correct_time:
+  - text: "Do you want me to create an appointment with {person} on {date} at {time}?"
+  
+  utter_inform:
+  - text: "Your appointment has been created!"
+      
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: false
