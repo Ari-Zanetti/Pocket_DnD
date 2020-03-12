@@ -71,7 +71,6 @@ class Room:
 			return EXIT, "new_room"
 		return NOTHING, "nothing"
 
-
 class ActionGenerateLabyrinth(Action):
 
 	def name(self) -> Text:
@@ -120,6 +119,7 @@ class ActionMove(Action): ##Go to should be a different action???
 		user = User(tracker.get_slot("level"), tracker.get_slot("weapons"))
 		current_room = tracker.get_slot("current_room")
 		room = rooms_db[tracker.get_slot("user")][current_room]
+
 		choice, result = room.move()
 		slots = [SlotSet("level", user.current_level), SlotSet("weapons", user.current_weapons)]
 		if choice == MONSTER:
@@ -192,6 +192,7 @@ class NextActionForm(FormAction):
 			return {"fight_with": value}
 		else:
 			dispatcher.utter_message(text="You don't have a " + value + "please choose a weapon.")
+				
 		
 	def validate_direction(self, value, dispatcher, tracker, domain):
 		#####
