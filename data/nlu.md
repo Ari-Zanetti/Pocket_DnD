@@ -18,11 +18,13 @@
 - of course
 - that sounds good
 - correct
+- ok
 - Yes
 - Indeed
 - Of course!
 - That sounds good
 - Correct
+- Ok
 
 ## intent:deny
 - no
@@ -37,3 +39,169 @@
 - Don't like that
 - No way
 - Not really
+
+
+## intent:next_action_form
+- I want to [turn](next_action:move) [left](direction:left)
+- I [go](next_action:move) [left](direction:left)
+- I want to [turn](next_action:move) [right](direction:right)
+- I want to [go](next_action:move) [right](direction:right)
+- I want to [walk](next_action:move) [left](direction:left)
+- [Walk](next_action:move) [right](direction:right)
+- I want to [go](next_action:move) [forward](direction:forward)
+- I want to [go](next_action:move) [backward](direction:backward)
+- I want to [go](next_action:move) [back](direction:backward) to [the first room](object:room 1)
+- [Go](next_action:move) [back](direction:backward) to [the second room](object:room 2)
+- I want to [go](next_action:move) [back](direction:backward) to [the third room](object:room 3)
+- I want to [go](next_action:move) [back](direction:backward) to [the fourth room](object:room 4)
+- I want to [go](next_action:move) [back](direction:backward) to [the fifth room](object:room 5)
+- I want to [walk](next_action:move) [forward](direction:forward)
+- I want to [walk](next_action:move) [backward](direction:backward)
+- I want to [walk](next_action:move) [back](direction:backward) to [the first room](object:room 1)
+- I want to [walk](next_action:move) [back](direction:backward) to [the second room](object:room 2)
+- I want to [walk](next_action:move) [back](direction:backward) to [the third room](object:room 3)
+- I want to [walk](next_action:move) [back](direction:backward) to [the fourth room](object:room 4)
+- I want to [walk](next_action:move) [back](direction:backward) to [the fifth room](object:room 5)
+- I want to [move](next_action:move) to [the next room](object:next room)
+- [Move](next_action:move) to [the following room](object:next room)
+- I want to [move](next_action:move) to [the second room](object:room 2)
+- I want to [move](next_action:move) to [the third room](object:room 3)
+- I want to [move](next_action:move) to [the fourth room](object:room 4)
+- I want to [move](next_action:move) to [the fifth room](object:room 5)
+- I want to [go](next_action:move) to [the next room](object:next room)
+- I want to [go](next_action:move) to [the following room](object:next room)
+- I want to [walk](next_action:move) to [the next room](object:next room)
+- I want to [walk](next_action:move) to [the following room](object:next room)
+- I want to [walk](next_action:move) to [the second room](object:room 2)
+- I want to [walk](next_action:move) to [the third room](object:room 3)
+- I want to [walk](next_action:move) to [the fourth room](object:room 4)
+- I want to [walk](next_action:move) to [the fifth room](object:room 5)
+- [Fight](next_action:fight) the zombie
+- I want to [fight](next_action:fight) the vampire
+- I want to [fight](next_action:fight) the demon
+- I want to [fight](next_action:fight) the monster
+- I want to [battle](next_action:fight) the zombie
+- I [battle](next_action:fight) the vampire
+- I want to [battle](next_action:fight) the demon
+- I want to [battle](next_action:fight) the monster
+- I want to [combat](next_action:fight) the zombie
+- I want to [combat](next_action:fight) the vampire
+- I want to [combat](next_action:fight) the demon
+- [Combat](next_action:fight) the monster
+- I want to [kill](next_action:fight) the zombie
+- I want to [kill](next_action:fight) the vampire
+- I want to [kill](next_action:fight) the demon
+- I want to [kill](next_action:fight) the monster
+- I want to [fight](next_action:fight) the zombie with my [Axe of the Twilight](fight_with)
+- [Fight](next_action:fight) the vampire using [Bow of the Timeless Battle](fight_with)
+- I [fight](next_action:fight) the demon using my [Dagger of the Lone Victory](fight_with)
+- I want to [fight](next_action:fight) the monster with the [Sword of the Shadows](fight_with)
+- I want to [battle](next_action:fight) the zombie with my [Dagger of the Twilight](fight_with)
+- I want to [battle](next_action:fight) the vampire using [Sword of the Timeless Battle](fight_with)
+- I want to [battle](next_action:fight) the demon using the [Axe of the Oracle](fight_with)
+- I want to [battle](next_action:fight) the monster with my [Shotgun of the Silence](fight_with)
+- I want to [combat](next_action:fight) the zombie using [Hammer of the Oblivion](fight_with)
+- I want to [combat](next_action:fight) the vampire with [Rifle of the Eternal Bloodlust](fight_with)
+- I want to [combat](next_action:fight) the demon using the [Hammer of the Lone Victory](fight_with)
+- [Combat](next_action:fight) the monster with my [Scythe of the Shadows](fight_with)
+- I want to [kill](next_action:fight) the zombie using my [Sword of the Timeless Battle](fight_with)
+- I want to [kill](next_action:fight) the vampire with the [Bow of the Silence](fight_with)
+- I want to [kill](next_action:fight) the demon with [Rifle of the Assassin](fight_with)
+- I want to [kill](next_action:fight) the monster using [Scythe of the Twilight](fight_with)
+- I want to [escape](next_action:escape)
+- [Escape](next_action:escape)
+- I want to [run away](next_action:escape)
+- I try to [run away](next_action:escape)
+- I [run away](next_action:escape)
+
+## intent:inform
+- [Axe of the Twilight](fight_with)
+- [Axe of the Lone Victory](fight_with)
+- [Axe of the Silence](fight_with)
+- [Axe of the Oblivion](fight_with)
+- [Axe of the Eternal Bloodlust](fight_with)
+- [Axe of the Shadows](fight_with)
+- [Axe of the Assassin](fight_with)
+- [Axe of the Oracle](fight_with)
+- [Axe of the Timeless Battle](fight_with)
+- [Bow of the Twilight](fight_with)
+- [Bow of the Lone Victory](fight_with)
+- [Bow of the Silence](fight_with)
+- [Bow of the Oblivion](fight_with)
+- [Bow of the Eternal Bloodlust](fight_with)
+- [Bow of the Shadows](fight_with)
+- [Bow of the Assassin](fight_with)
+- [Bow of the Oracle](fight_with)
+- [Bow of the Timeless Battle](fight_with)
+- [Sword of the Twilight](fight_with)
+- [Sword of the Lone Victory](fight_with)
+- [Sword of the Silence](fight_with)
+- [Sword of the Oblivion](fight_with)
+- [Sword of the Eternal Bloodlust](fight_with)
+- [Sword of the Shadows](fight_with)
+- [Sword of the Assassin](fight_with)
+- [Sword of the Oracle](fight_with)
+- [Sword of the Timeless Battle](fight_with)
+- [Dagger of the Twilight](fight_with)
+- [Dagger of the Lone Victory](fight_with)
+- [Dagger of the Silence](fight_with)
+- [Dagger of the Oblivion](fight_with)
+- [Dagger of the Eternal Bloodlust](fight_with)
+- [Dagger of the Shadows](fight_with)
+- [Dagger of the Assassin](fight_with)
+- [Dagger of the Oracle](fight_with)
+- [Dagger of the Timeless Battle](fight_with)
+- [Rifle of the Twilight](fight_with)
+- [Rifle of the Lone Victory](fight_with)
+- [Rifle of the Silence](fight_with)
+- [Rifle of the Oblivion](fight_with)
+- [Rifle of the Eternal Bloodlust](fight_with)
+- [Rifle of the Shadows](fight_with)
+- [Rifle of the Assassin](fight_with)
+- [Rifle of the Oracle](fight_with)
+- [Rifle of the Timeless Battle](fight_with)
+- [Shotgun of the Twilight](fight_with)
+- [Shotgun of the Lone Victory](fight_with)
+- [Shotgun of the Silence](fight_with)
+- [Shotgun of the Oblivion](fight_with)
+- [Shotgun of the Eternal Bloodlust](fight_with)
+- [Shotgun of the Shadows](fight_with)
+- [Shotgun of the Assassin](fight_with)
+- [Shotgun of the Oracle](fight_with)
+- [Shotgun of the Timeless Battle](fight_with)
+- [Hammer of the Twilight](fight_with)
+- [Hammer of the Lone Victory](fight_with)
+- [Hammer of the Silence](fight_with)
+- [Hammer of the Oblivion](fight_with)
+- [Hammer of the Eternal Bloodlust](fight_with)
+- [Hammer of the Shadows](fight_with)
+- [Hammer of the Assassin](fight_with)
+- [Hammer of the Oracle](fight_with)
+- [Hammer of the Timeless Battle](fight_with)
+- [Scythe of the Twilight](fight_with)
+- [Scythe of the Lone Victory](fight_with)
+- [Scythe of the Silence](fight_with)
+- [Scythe of the Oblivion](fight_with)
+- [Scythe of the Eternal Bloodlust](fight_with)
+- [Scythe of the Shadows](fight_with)
+- [Scythe of the Assassin](fight_with)
+- [Scythe of the Oracle](fight_with)
+- [Scythe of the Timeless Battle](fight_with)
+- [Lasso of the Twilight](fight_with)
+- [Lasso of the Lone Victory](fight_with)
+- [Lasso of the Silence](fight_with)
+- [Lasso of the Oblivion](fight_with)
+- [Lasso of the Eternal Bloodlust](fight_with)
+- [Lasso of the Shadows](fight_with)
+- [Lasso of the Assassin](fight_with)
+- [Lasso of the Oracle](fight_with)
+- [Lasso of the Timeless Battle](fight_with)
+- [Spear of the Twilight](fight_with)
+- [Spear of the Lone Victory](fight_with)
+- [Spear of the Silence](fight_with)
+- [Spear of the Oblivion](fight_with)
+- [Spear of the Eternal Bloodlust](fight_with)
+- [Spear of the Shadows](fight_with)
+- [Spear of the Assassin](fight_with)
+- [Spear of the Oracle](fight_with)
+- [Spear of the Timeless Battle](fight_with)

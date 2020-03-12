@@ -18,8 +18,14 @@ slots:
       type: unfeaturized
   direction:
       type: unfeaturized
+  object:
+      type: unfeaturized
+  current_monster:
+      type: unfeaturized
   fight_with:
       type: unfeaturized
+  requested_slot :
+    type: unfeaturized
 
 intents:
   - greet
@@ -28,6 +34,10 @@ intents:
   - explore
   - move
   - fight
+  - next_action_form:
+      use_entities: []
+  - inform
+  - escape
   
 entities:
   - user
@@ -36,27 +46,45 @@ entities:
   - level
   - weapons
   - current_room
+  - current_monster
   - next_action
   - direction
   - fight_with
+  - object
   
 actions:
   - utter_greet
   - action_generate_labyrinth
-  - utter_next_action
   - utter_lose
   - action_enter_room
   - action_move
+  - action_explore
+  - action_fight
+  - action_escape
+  - next_action_form
+  - utter_ask_next_action
+  - utter_ask_direction
+  - utter_ask_fight_with
+  - utter_confirm
 
 templates:
   utter_greet:
   - text: "Welcome to the {name}! To win the game, you will have to survive the {n_rooms} rooms and find the exit. To move, just specify where you want to go, for example left, right, forward, or say the name of a room or object. Be careful, you may find monsters, but also treasures! You can always search the room before you enter it. Any object you find can later be used to fight. Good luck!"
   
-  utter_next_action:
-  - text: "What do you want to do?"
+  utter_ask_next_action:
+  - text: "What do you want to do?"  
+  
+  utter_ask_direction:
+  - text: "Where do you want to go?"  
+  
+  utter_ask_fight_with:
+  - text: "Choose your weapon!"
   
   utter_lose:
   - text: "Oh no, it looks like you have lost :("
+  
+  utter_confirm:
+  - text: "Do you want to {next_action}?"
       
 session_config:
   session_expiration_time: 60
