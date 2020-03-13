@@ -1,16 +1,41 @@
-##
+## path move
 * greet
   - action_generate_labyrinth
   - utter_greet
+* move_form {"direction": "forward"}
+  - move_form
+  - form{"name": "move_form"}
+  - form{"name": null}
+* affirm
+  - action_move{"level":"1", "weapons":[], "current_monster":"vampire"}
+  
+## path fight
+* greet
+  - action_generate_labyrinth
+  - utter_greet
+* fight_form
+  - fight_form
+  - form{"name": "fight_form"}
+  - form{"name": null}
+* affirm
+  - utter_next_action
     
 ## incorrect
 * deny
-  - slot{"name": null}
-  - slot{"n_rooms": null}
-  - utter_lose
+  - utter_next_action
   
-## correct
-* affirm
-  - next_action_form
-  - form{"name": "next_action_form"}
+## move
+* move_form {"direction": "forward"}
+  - move_form
+  - form{"name": "move_form"}
   - form{"name": null}
+* affirm
+  - action_move{"level":"1", "weapons":[], "current_monster":"vampire"}
+  
+## fight
+* fight_form
+  - fight_form
+  - form{"name": "fight_form"}
+  - form{"name": null}
+* affirm
+  - utter_next_action

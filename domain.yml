@@ -1,44 +1,46 @@
+form:
+  - move_form
+  - fight_form
+
 slots:
   user:
-      type: unfeaturized
+    type: unfeaturized
   name:
-      type: unfeaturized
+    type: unfeaturized
   n_rooms:
-      type: unfeaturized
+    type: unfeaturized
   level:
-      type: unfeaturized
-      initial_value: 0
+    type: unfeaturized
+    initial_value: 0
   weapons:
-      type: list
-      initial_value: []
+    type: list
+    initial_value: []
   current_room:
-      type: unfeaturized
-      initial_value: 0
-  next_action:
-      type: unfeaturized
+    type: unfeaturized
+    initial_value: 0
   direction:
-      type: unfeaturized
+    type: unfeaturized
   object:
-      type: unfeaturized
+    type: unfeaturized
   current_monster:
-      type: unfeaturized
+    type: unfeaturized
   fight_with:
-      type: unfeaturized
+    type: unfeaturized
   requested_slot :
     type: unfeaturized
+  next_action:
+    type: unfeaturized  
 
 intents:
   - greet
   - affirm
   - deny
-  - explore
-  - move
-  - fight
-  - next_action_form:
-      use_entities: []
   - inform
-  - escape
-  
+  - move_form:
+      use_entities: []
+  - fight_form:
+      use_entities: []
+
 entities:
   - user
   - name
@@ -47,41 +49,28 @@ entities:
   - weapons
   - current_room
   - current_monster
-  - next_action
   - direction
   - fight_with
   - object
+  - next_action
   
 actions:
-  - utter_greet
   - action_generate_labyrinth
-  - utter_lose
-  - action_enter_room
+  - utter_greet
   - action_move
-  - action_explore
-  - action_fight
-  - action_escape
-  - next_action_form
-  - utter_ask_next_action
-  - utter_ask_direction
-  - utter_ask_fight_with
-  - utter_confirm
+  - move_form
+  - fight_form
+  - utter_next_action
 
 templates:
   utter_greet:
-  - text: "Welcome to the {name}! To win the game, you will have to survive the {n_rooms} rooms and find the exit. To move, just specify where you want to go, for example left, right, forward, or say the name of a room or object. Be careful, you may find monsters, but also treasures! You can always search the room before you enter it. Any object you find can later be used to fight. Good luck!"
+  - text: "Welcome to the {name}! To win the game, you will have to survive the {n_rooms} rooms and find the exit. To move, just specify where you want to go, for example left, right, forward, or say the name of a room or object. Be careful, you may find monsters, but also treasures! You can always search the room before you enter it. Any object you find can later be used to fight. Good luck! What is your first move?"
   
-  utter_ask_next_action:
-  - text: "What do you want to do?"  
-  
-  utter_ask_direction:
-  - text: "Where do you want to go?"  
-  
-  utter_ask_fight_with:
-  - text: "Choose your weapon!"
-  
-  utter_lose:
-  - text: "Oh no, it looks like you have lost :("
+  utter_next_action:
+  - text: "What do you want to do?"
+   
+  utter_default:
+  - text: "Sorry, I don’t understand."
   
   utter_confirm:
   - text: "Do you want to {next_action}?"
