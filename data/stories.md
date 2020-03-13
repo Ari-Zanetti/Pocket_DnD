@@ -7,7 +7,8 @@
   - form{"name": "move_form"}
   - form{"name": null}
 * affirm
-  - action_move{"level":"1", "weapons":[], "current_monster":"vampire"}
+  - action_move
+  - slot{"level": 1, "current_monster": "vampire", "weapons": ["the Rifle of the Shadows", "the Axe of the Silence"]}
   
 ## path fight
 * greet

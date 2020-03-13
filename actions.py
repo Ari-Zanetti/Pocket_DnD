@@ -47,7 +47,7 @@ class Room:
 			self.monsters = 0
 		else :
 			self.monsters = random.randrange(MAX_MONSTERS*user.current_level)
-		self.treasures = random.randrange(MAX_TREASURES)
+		self.treasures = random.randrange(1, MAX_TREASURES)
 		self.user = user
 		self.door = False
 		self.next = None
@@ -59,7 +59,7 @@ class Room:
 				self.monsters -= 1
 				return MONSTER, random.choice(monsters)
 		if self.treasures > 0:
-			is_treasure = random_bool()
+			is_treasure = True
 			if is_treasure:
 				self.treasures -= 1 
 				self.user.current_level +=1
@@ -115,12 +115,12 @@ class ActionMove(Action): ##Go to should be a different action???
 		return "action_move"
 	
 	def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-		user = User(tracker.get_slot("level"), tracker.get_slot("weapons"))
+		user = User(tracker.get_slot("user"), tracker.get_slot("level"), tracker.get_slot("weapons"))
 		current_room = tracker.get_slot("current_room") ###What if I change the room??
-		room = rooms_db[tracker.get_slot("user")][current_room]
+		room = rooms_db[user.user_id][current_room]
 
 		choice, result = room.move()
-		slots = [SlotSet("level", user.current_level), SlotSet("weapons", user.current_weapons)]
+		slots = [SlotSet("level", user.current_level), SlotSet("weapons", user.current_weapons)] #It doesnt save the level and weapon?
 		if choice == MONSTER:
 			dispatcher.utter_message(text="You encountered a " + result + " what do you want to do?")
 			slots.append(SlotSet("current_monster", result))
@@ -194,7 +194,9 @@ class MoveForm(FormAction):
 		tracker: Tracker,
 		domain: Dict[Text, Any],
 	) -> List[Dict]:
-		next_action = "move " + tracker.get_slot("direction")
+		next_action = "move" 
+		if tracker.get_slot("direction"):
+			next_action += " " + tracker.get_slot("direction")
 		if tracker.get_slot("object"):
 			next_action += " to " + tracker.get_slot("object")
 		dispatcher.utter_message(text="Do you want to " + next_action + "?")
