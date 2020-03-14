@@ -40,6 +40,33 @@
 - No way
 - Not really
 
+## intent: new_room
+- I want to open the door
+- I open the door
+- Open the door
+- Enter
+- Enter the door
+- Enter the room
+- Go inside
+- I want to go through
+- Go through the door
+- Unshut the door
+
+## intent: escape
+- I want to escape
+- Run away from the monster
+- Run away from the vampire
+- I want to run away from the demon
+- I want to run away from the zombie
+- Go away
+- Escape from the monster
+- Withdraw
+- I want to withdraw
+- Hide
+- I want to hide away
+- Flight
+- Duck
+
 ## intent: move_form
 - I want to turn [left](direction:left)
 - I go [left](direction:left)

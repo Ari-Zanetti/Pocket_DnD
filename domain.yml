@@ -5,6 +5,7 @@ form:
 slots:
   user:
     type: unfeaturized
+    initial_value: 0
   name:
     type: unfeaturized
   n_rooms:
@@ -36,6 +37,8 @@ intents:
   - affirm
   - deny
   - inform
+  - new_room
+  - escape
   - move_form:
       use_entities: []
   - fight_form:
@@ -61,6 +64,10 @@ actions:
   - move_form
   - fight_form
   - utter_next_action
+  - action_escape
+  - action_newroom
+  - utter_ask_direction
+  - utter_ask_fight_with
 
 templates:
   utter_greet:
@@ -71,6 +78,12 @@ templates:
    
   utter_default:
   - text: "Sorry, I don’t understand."
+  
+  utter_ask_direction:
+  - text: "Where do you want to go?"
+  
+  utter_ask_fight_with:
+  - text: "Choose a weapon to fight!"
   
   utter_confirm:
   - text: "Do you want to {next_action}?"
