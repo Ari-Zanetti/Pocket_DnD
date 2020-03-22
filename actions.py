@@ -223,25 +223,25 @@ class ActionExplore(Action):
 		user, room = get_current_user_room(tracker)
 		revealed_monsters = 0
 		for i in range(room.monsters):
-			#if roll_die() > 3:
-			if True:
+			if roll_die() > 3:
 				revealed_monsters += 1
 				room.found_monsters.append(random.choice(monsters))
 				room.monsters -= 1
 		revealed_treasures = 0
 		for i in range(room.treasures):
-			#if roll_die() > 4:
-			if True:
+			if roll_die() > 4:
 				revealed_treasures += 1
 				room.found_treasures.append(random.choice(weapon_nouns) + " of the " + random.choice(weapon_adjectives))
 				room.monsters -= 1
 		revealed_doors = 0
 		for i in range(room.doors):
-			#if roll_die() > 5:
-			if True:
+			if roll_die() > 5:
 				revealed_doors += 1
 				room.add_new_room(user)
-		dispatcher.utter_message(text="You can see " + str(revealed_monsters) + " monsters," + str(revealed_treasures) + " treasures, and "+ str(revealed_doors) + " doors.")
+		if (revealed_monsters == 0 and revealed_treasures == 0 and revealed_doors == 0):
+			dispatcher.utter_message(text="There is a thick fog in the room, you can't see anything.")
+		else:
+			dispatcher.utter_message(text="You can see " + str(revealed_monsters) + " monsters, " + str(revealed_treasures) + " treasures, and "+ str(revealed_doors) + " doors.")
 		return [SlotSet("next_action", None)]
 
 
