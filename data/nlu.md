@@ -40,24 +40,12 @@
 - No way
 - Not really
 
-## intent: new_room
-- I want to open the door
-- I open the door
-- Open the door
-- Enter
-- Enter the door
-- Enter the room
-- Go inside
-- I want to go through
-- Go through the door
-- Unshut the door
-
 ## intent: escape
 - I want to escape
 - Run away from the monster
-- Run away from the vampire
-- I want to run away from the demon
-- I want to run away from the zombie
+- Run away from the [vampire](current_monster)
+- I want to run away from the [demon](current_monster)
+- I want to run away from the [troll](current_monster)
 - Go away
 - Escape from the monster
 - Withdraw
@@ -67,7 +55,29 @@
 - Flight
 - Duck
 
+## intent: explore
+- I want to explore the room
+- I want to search the room
+- Search the room for treasures
+- Look for a door
+- Search the room 
+- I want to look for monsters
+- I want to see if there is a door
+- I want to see if there are treasures
+- Explore
+- Look for treasures
+
 ## intent: move_form
+- I want to open the [door](object:next)
+- I open the [door](object:next)
+- Open the [door](object:next)
+- Enter
+- Enter the [door](object:next)
+- Enter the [room](object:next)
+- Go [inside](object:next)
+- I want to go [through](object:next)
+- Go [through](object:next) the door
+- Unshut the [door](object:next)
 - I want to turn [left](direction:left)
 - I go [left](direction:left)
 - I want to turn [right](direction:right)
@@ -80,67 +90,95 @@
 - walk [right](direction:right)
 - I want to go [forward](direction:forward)
 - I want to go [backward](direction:backward)
-- I want to go [back](direction:backward) to [the first room](object:room 1)
-- go [back](direction:backward) to [the second room](object:room 2)
-- I want to go [back](direction:backward) to [the third room](object:room 3)
-- I want to go [back](direction:backward) to [the fourth room](object:room 4)
-- I want to go [back](direction:backward) to [the fifth room](object:room 5)
+- I want to go [back](direction:backward) to the [first](object:1) room
+- go [back](direction:backward) to the [second](object:2) room
+- I want to go [back](direction:backward) to the [third](object:3) room
+- I want to go [back](direction:backward) to the [fourth](object:4) room
+- I want to go [back](direction:backward) to the [fifth](object:5) room
+- Go to the [sixth](object:6) room
 - I want to walk [forward](direction:forward)
 - I want to walk [backward](direction:backward)
-- I want to walk [back](direction:backward) to [the first room](object:room 1)
-- I want to walk [back](direction:backward) to [the second room](object:room 2)
-- I want to walk [back](direction:backward) to [the third room](object:room 3)
-- I want to walk [back](direction:backward) to [the fourth room](object:room 4)
-- I want to walk [back](direction:backward) to [the fifth room](object:room 5)
+- I want to walk [back](direction:backward) to the [first](object:1) room
+- I want to walk [back](direction:backward) to the [second](object:2) room
+- I want to walk [back](direction:backward) to the [third](object:3) room
+- I want to walk [back](direction:backward) to the [fourth](object:4) room
+- I want to walk [back](direction:backward) to the [fifth](object:5) room
+- Walk to the [sixth](object:6) room
 - I want to move [forward](direction:forward)
 - I want to move [backward](direction:backward)
-- I want to move to [the next room](object:next room)
-- Move to [the following room](object:next room)
-- I want to move to [the second room](object:room 2)
-- I want to move to [the third room](object:room 3)
-- I want to move to [the fourth room](object:room 4)
-- I want to move to [the fifth room](object:room 5)
-- I want to go to [the next room](object:next room)
-- I want to go to [the following room](object:next room)
-- I want to walk to [the next room](object:next room)
-- I want to walk to [the following room](object:next room)
-- I want to walk to [the second room](object:room 2)
-- I want to walk to [the third room](object:room 3)
-- I want to walk to [the fourth room](object:room 4)
-- I want to walk to [the fifth room](object:room 5)
+- I want to move to the [second](object:2) room
+- I want to move to the [third](object:3) room
+- Move to the [fourth](object:4) room
+- I want to move to the [fifth](object:5) room
+- I want to move to the [sixth](object:6) room
+- Walk to the [second](object:2) room
+- I want to walk to the [third](object:3) room
+- I want to walk to the [fourth](object:4) room
+- I want to walk to the [fifth](object:5) room
+- I want to walk to the [sixth](object:6) room
+- I want to walk [back](direction:backward) to the [next](object) room
+- I want to move [right](direction:right) to the [next](object) room
+- I walk [forward](direction:forward) to the [following](object:next) room
+- Go [left](direction:left) to the [following](object:next) room
+- I want to go [back](direction:backward) to the [previous](object) room
+- Move [right](direction:right) to the [previous](object) room
+- Walk [backward](direction:backward) to the [previous](object) room
+- I go [left](direction:left) to the [previous](object) room
+- I want to go to the [door](object:next)
+- I want to move to the [door](object:next)
+- I go to room [1](object)
+- I want to move to room [2](object)
+- Walk to room [3](object)
+- I want to go to room [4](object)
+- Enter the [next](object:next) room
+- I want to go to the first [treasure](object)
+- I want to reach the [treasure](object)
+- Walk to the [treasure](object)
+- Move to one of the [treasures](object:treasure)
+- I want to walk to the [treasure](object)
+- Take the [treasure](object)
+- Move to the [monster](object)
+- I want to go to the [monster](object)
+- I want to move towards the [monster](object)
+- Move towards the [monster](object)
+- I want to reach the [monster](object)
+- Fight one of the [monsters](object:monster)
+- Fight the first [monster](object:monster)
+- Go to the [monster](object) to fight it
+- Walk towards one [monster](object)
 
 ## intent: fight_form
-- Fight the zombie
-- I want to fight the vampire
-- I want to fight the demon
+- Fight the [troll](current_monster)
+- I want to fight the [vampire](current_monster)
+- I want to fight the [demon](current_monster)
 - I want to fight the monster
-- I want to battle the zombie
-- I battle the vampire
-- I want to battle the demon
+- I want to battle the [troll](current_monster)
+- I battle the [vampire](current_monster)
+- I want to battle the [demon](current_monster)
 - I want to battle the monster
-- I want to combat the zombie
-- I want to combat the vampire
-- I want to combat the demon
+- I want to combat the [troll](current_monster)
+- I want to combat the [vampire](current_monster)
+- I want to combat the [demon](current_monster)
 - combat the monster
-- I want to kill the zombie
-- I want to kill the vampire
-- I want to kill the demon
+- I want to kill the [troll](current_monster)
+- I want to kill the [vampire](current_monster)
+- I want to kill the [demon](current_monster)
 - I want to kill the monster
-- I want to fight the zombie with my [Axe of the Twilight](fight_with)
-- Fight the vampire using [Bow of the Timeless Battle](fight_with)
-- I fight the demon using my [Dagger of the Lone Victory](fight_with)
+- I want to fight the [troll](current_monster) with my [Axe of the Twilight](fight_with)
+- Fight the [vampire](current_monster) using [Bow of the Timeless Battle](fight_with)
+- I fight the [demon](current_monster) using my [Dagger of the Lone Victory](fight_with)
 - I want to fight the monster with the [Sword of the Shadows](fight_with)
-- I want to battle the zombie with my [Dagger of the Twilight](fight_with)
-- I want to battle the vampire using [Sword of the Timeless Battle](fight_with)
-- I want to battle the demon using the [Axe of the Oracle](fight_with)
+- I want to battle the [troll](current_monster) with my [Dagger of the Twilight](fight_with)
+- I want to battle the [vampire](current_monster) using [Sword of the Timeless Battle](fight_with)
+- I want to battle the [demon](current_monster) using the [Axe of the Oracle](fight_with)
 - I want to battle the monster with my [Shotgun of the Silence](fight_with)
-- I want to combat the zombie using [Hammer of the Oblivion](fight_with)
-- I want to combat the vampire with [Rifle of the Eternal Bloodlust](fight_with)
-- I want to combat the demon using the [Hammer of the Lone Victory](fight_with)
+- I want to combat the [troll](current_monster) using [Hammer of the Oblivion](fight_with)
+- I want to combat the [vampire](current_monster) with [Rifle of the Eternal Bloodlust](fight_with)
+- I want to combat the [demon](current_monster) using the [Hammer of the Lone Victory](fight_with)
 - Combat the monster with my [Scythe of the Shadows](fight_with)
-- I want to kill the zombie using my [Sword of the Timeless Battle](fight_with)
-- I want to kill the vampire with the [Bow of the Silence](fight_with)
-- I want to kill the demon with [Rifle of the Assassin](fight_with)
+- I want to kill the [troll](current_monster) using my [Sword of the Timeless Battle](fight_with)
+- I want to kill the [vampire](current_monster) with the [Bow of the Silence](fight_with)
+- I want to kill the [demon](current_monster) with [Rifle of the Assassin](fight_with)
 - I want to kill the monster using [Scythe of the Twilight](fight_with)
 
 
@@ -235,3 +273,10 @@
 - [Spear of the Assassin](fight_with)
 - [Spear of the Oracle](fight_with)
 - [Spear of the Timeless Battle](fight_with)
+- [0](object)
+- [1](object)
+- [2](object)
+- [3](object)
+- [4](object)
+- [5](object)
+- [6](object)

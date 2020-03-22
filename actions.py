@@ -1,12 +1,12 @@
+import random
 from typing import Dict, Text, Any, List, Union, Optional
 from rasa.core.slots import Slot
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.events import SlotSet
-from rasa_sdk.events import AllSlotsReset
+from rasa_sdk.events import Restarted
+from rasa_sdk.events import FollowupAction
 from rasa_sdk.forms import FormAction
-
-import random
 
 MONSTER = 0
 TREASURE = 1
@@ -19,53 +19,88 @@ nouns = ["Dungeon", "Forest", "Catacombs", "Pit", "Tomb", "Cavern", "Tunnel", "M
 weapon_adjectives = ["Twilight", "Lone Victory", "Silence", "Oblivion", "Eternal Bloodlust", "Shadows", "Assassin", "Oracle", "Timeless Battle"]
 weapon_nouns = ["Axe", "Bow", "Sword", "Dagger", "Rifle", "Shotgun", "Hammer", "Scythe", "Lasso", "Spear"]
 
-monsters = ["zombie", "vampire", "demon"]
+monsters = ["troll", "vampire", "demon"]
 
-MAX_ROOMS = 5
+MAX_ROOMS = 6
 
 MAX_MONSTERS = 2
 MAX_TREASURES = 3
 
 rooms_db = {}
 
+
 def get_new_user_id() :
 	current_user = len(rooms_db) + 1
 	return current_user
 
+def get_next_room_number(user_id) :
+	current_rooms = list(rooms_db[user_id].keys())
+	current_rooms.sort(reverse=True)
+	return current_rooms[0] + 1
+
+
 def random_bool() :
 	return random.choice([True, False])
 
+
+def roll_die() :
+	return random.randint(1, 6)
+
+
 class User:
-	def __init__(self, user_id, level=0, weapons=[]):
+	def __init__(self, user_id, life, n_rooms, weapons=[]):
 		self.user_id = user_id
-		self.current_level = level
-		self.current_weapons = weapons
+		self.weapons = weapons
+		self.life = life
+		self.n_rooms = n_rooms
+
 
 class Room:
-	def __init__(self):
-		self.monsters = random.randrange(MAX_MONSTERS)
-		self.treasures = random.randrange(1, MAX_TREASURES)
-		self.door = False
-		self.next = None
+	def __init__(self, number, previous, min_doors = 1, max_doors = 2):
+		self.id = number
+		self.monsters = random.randint(0, MAX_MONSTERS)
+		self.found_monsters = []
+		self.treasures = random.randint(1, MAX_TREASURES)
+		self.found_treasures = []
+		self.doors = random.randint(min_doors, max_doors) if max_doors > 0 else 0
+		self.right_path = 0 if self.doors == 0 else random.randrange(self.doors)
+		self.previous = previous
+		self.next = []
+        
+	def add_new_room(self, user):
+		room_number = get_next_room_number(user.user_id)
+		min_doors = 1
+		user_rooms = rooms_db[user.user_id]
+		remaining_rooms = user.n_rooms - len(user_rooms)
+		if user.n_rooms == len(user_rooms):
+			remaining_rooms += 1
+		if len(self.next) != self.right_path:
+			min_doors = 0 # Not on the right path, so it can be a dead end.
+		new_room = Room(room_number, self.id, min_doors, remaining_rooms - 1)
+		self.next.append(room_number)
+		user_rooms[room_number] = new_room
+		return room_number
 
 	def move(self, user):
 		if self.monsters > 0:
 			is_monster = random_bool()
 			if is_monster:
 				self.monsters -= 1
-				return MONSTER, random.choice(monsters)
+				found_monst = random.choice(monsters)
+				self.found_monsters.append(found_monst)
+				return MONSTER, found_monst
 		if self.treasures > 0:
-			is_treasure = True
+			is_treasure = random_bool()
 			if is_treasure:
 				self.treasures -= 1 
-				user.current_level += 1
-				weapon = "the " + random.choice(weapon_nouns) + " of the " + random.choice(weapon_adjectives)
-				user.current_weapons.append(weapon)
+				weapon = random.choice(weapon_nouns) + " of the " + random.choice(weapon_adjectives)
+				user.weapons.append(weapon)
 				return TREASURE, weapon
-		if not self.door and random_bool():
-			self.door = True ##Visible?????
-			return EXIT, "a door"
+		if len(self.next) < self.doors and random_bool():
+			room_number = self.add_new_room(user)
+			return EXIT, room_number
 		return NOTHING, "nothing"
+
 
 class ActionGenerateLabyrinth(Action):
 
@@ -74,70 +109,140 @@ class ActionGenerateLabyrinth(Action):
 	
 	def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 		name = random.choice(adjectives) + " " + random.choice(nouns)
-		n_rooms = random.randrange(MAX_ROOMS) + 1
+		n_rooms = random.randint(1, MAX_ROOMS) + 1
 		userid = get_new_user_id()
-		first_room = Room()
-		rooms_db[userid] = [first_room]
+		first_room = Room(0, None)
+		rooms_db[userid] = {0: first_room}
 		
 		return [SlotSet("name", name), SlotSet("n_rooms", n_rooms), SlotSet("user", userid)]
 
 
-class ActionNewRoom(Action):
+def get_room(user, rooms, room_id):
+	for room in rooms:
+		if int(room) == int(room_id): 
+			return rooms_db[user.user_id][room]
+	return None
+
+
+def get_current_user_room(tracker):
+	user = User(tracker.get_slot("user"), tracker.get_slot("life"), tracker.get_slot("n_rooms"), tracker.get_slot("weapons"))
+	current_room = tracker.get_slot("current_room")
+	user_rooms = rooms_db[user.user_id]
+	room = user_rooms[int(current_room)]
+	return user, room
+
+
+class ActionMoveTo(Action):
 
 	def name(self) -> Text:
-		return "action_newroom"
+		return "action_moveto"
 	
 	def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-		user = User(tracker.get_slot("user"), tracker.get_slot("level"), tracker.get_slot("weapons"))
+		returned = [SlotSet("object", None), SlotSet("next_action", None)]
+		user, room = get_current_user_room(tracker)
 		current_room = tracker.get_slot("current_room")
-		n_rooms = tracker.get_slot("n_rooms")
-		user_rooms = rooms_db[tracker.get_slot("user")]
-		room = user_rooms[current_room]
-		if room.next:
-			current_room = room.next
-		else : #new room
-			current_room +=1
-			room.next = current_room
-			user_rooms.append(Room())
-			if len(user_rooms) == n_rooms:
-				dispatcher.utter_message(text="You have reached the final room!")
+		value = tracker.get_slot("object")
+		# Check if it is a treasure or monster in the room
+		if value == "monster":
+			if len(room.found_monsters) > 0:
+				current_monster = room.found_monsters[0]
+				room.monsters -= 1
+				dispatcher.utter_message(text="You reach a " + current_monster+ ". What do you do?")
+				returned.append(SlotSet("current_monster", current_monster))
 			else:
-				dispatcher.utter_message(text="Welcome to room n. " + str(current_room) + " what do you want to do?")
+				dispatcher.utter_message(text="You don't see any monster here.")
+			return returned
+		elif value == "treasure":
+			if len(room.found_treasures) > 0:
+				current_treasure = room.found_treasures.pop(0)
+				room.treasures -= 1
+				user.weapons.append(current_treasure)
+				dispatcher.utter_message(text="You now have the "+ current_treasure + ". What do you want to do?")
+				returned.append(SlotSet("weapons", user.weapons))
+			else:
+				dispatcher.utter_message(text="You don't see any treasure here.")
+			return returned
+		elif value == "next":
+			value = room.next[0] if len(room.next) > 0 else 0
+		elif value == "previous":
+			value = room.previous
+			if value is None:
+				dispatcher.utter_message(text="This is the first room!")
+				return returned
+		new_room = None
+		reachable_rooms = []
+		reachable_rooms = room.next
+		if room.previous is not None:
+			reachable_rooms.append(room.previous)
+		new_room = get_room(user, reachable_rooms, value)
+		if not new_room:
+			dispatcher.utter_message(text="You cannot reach this room from here.")
+			return returned
 
-		return [SlotSet("current_room", current_room)]
+		if str(value) == str(user.n_rooms):
+			dispatcher.utter_message(text="You have reached the final room! You win!!")
+			return [Restarted()]
+		else:
+			dispatcher.utter_message(text="Welcome to room n. " + str(value) + ", what do you want to do?")
+		returned.append(SlotSet("current_room", value))
+		return returned
 
-class ActionMove(Action): ##Go to should be a different action???
+
+class ActionMove(Action):
 
 	def name(self) -> Text:
 		return "action_move"
 	
 	def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-		user = User(tracker.get_slot("user"), tracker.get_slot("level"), tracker.get_slot("weapons"))
-		current_room = tracker.get_slot("current_room") ###What if I change the room??
-		room = rooms_db[user.user_id][current_room]
+		user, room = get_current_user_room(tracker)
 
 		choice, result = room.move(user)
-		slots = [SlotSet("level", user.current_level), SlotSet("weapons", user.current_weapons)] #It doesnt save the level and weapon?
+		slots = [SlotSet("weapons", user.weapons)]
+		
 		if choice == MONSTER:
 			dispatcher.utter_message(text="You encountered a " + result + " what do you want to do?")
 			slots.append(SlotSet("current_monster", result))
+		elif choice == EXIT:
+			dispatcher.utter_message(text="You found the door to room n. " + str(result) + ". What do you want to do?")
+			slots.append(SlotSet("object", result))
 		else:
 			slots.append(SlotSet("object", None))
-			slots.append(SlotSet("direction", None))
-			slots.append(SlotSet("next_action", None))
 			dispatcher.utter_message(text="You found " + result + ". What do you want to do next?")
+
+		slots.append(SlotSet("direction", None))
+		slots.append(SlotSet("next_action", None))
 		return slots
 
-#class ActionExplore(Action):
-#
-#	def name(self) -> Text:
-#		return "action_explore"
-#	
-#	def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-#		current_room = tracker.get_slot("current_room")
-#		room = rooms_db[tracker.get_slot("user")][current_room]
-#		dispatcher.utter_message(text="In this room there are " + room.monsters + " monsters and " + room.treasures + " treasures.")
-#		return []	
+
+class ActionExplore(Action):
+
+	def name(self) -> Text:
+		return "action_explore"
+	
+	def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+		user, room = get_current_user_room(tracker)
+		revealed_monsters = 0
+		for i in range(room.monsters):
+			#if roll_die() > 3:
+			if True:
+				revealed_monsters += 1
+				room.found_monsters.append(random.choice(monsters))
+				room.monsters -= 1
+		revealed_treasures = 0
+		for i in range(room.treasures):
+			#if roll_die() > 4:
+			if True:
+				revealed_treasures += 1
+				room.found_treasures.append(random.choice(weapon_nouns) + " of the " + random.choice(weapon_adjectives))
+				room.monsters -= 1
+		revealed_doors = 0
+		for i in range(room.doors):
+			#if roll_die() > 5:
+			if True:
+				revealed_doors += 1
+				room.add_new_room(user)
+		dispatcher.utter_message(text="You can see " + str(revealed_monsters) + " monsters," + str(revealed_treasures) + " treasures, and "+ str(revealed_doors) + " doors.")
+		return [SlotSet("next_action", None)]
 
 
 class ActionFight(Action):
@@ -146,10 +251,38 @@ class ActionFight(Action):
 		return "action_fight"
 
 	def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-		current_room = tracker.get_slot("current_room")
-		room = rooms_db[tracker.get_slot("user")][current_room]
-		dispatcher.utter_message(text="You win!")
-		return []	
+		user, room = get_current_user_room(tracker)
+		monster = tracker.get_slot("current_monster")
+		weapon = tracker.get_slot("fight_with")
+		all_weapons = tracker.get_slot("weapons")
+		life = int(tracker.get_slot("life"))
+
+		returned = [SlotSet("next_action", None)]
+		if roll_die() > 4:
+			life += 1
+			dispatcher.utter_message(text="You defeated the monster! What do you want to do?")
+			if monster == "monster":
+				room.found_monsters.pop(0)
+			else:
+				room.found_monsters.remove(monster)
+			returned.append(SlotSet("current_monster", None))
+		else :
+			life -= 1
+			if life == 0 :
+				dispatcher.utter_message(template="utter_lose")
+				return [Restarted()]
+			lose_weapon = random_bool()
+			message = "The monster hits you, you now have " + str(life) + " lives"
+			if lose_weapon:
+				message += " and you lost your " + weapon
+				all_weapons.remove(weapon)
+				returned.append(SlotSet("weapons", all_weapons))
+			dispatcher.utter_message(text=message +". What do you want to do?")
+			returned.append(SlotSet("current_monster", monster))
+		returned.append(SlotSet("life", life))
+		returned.append(FollowupAction("action_listen"))
+		return returned
+
 
 class ActionEscape(Action):
 
@@ -162,7 +295,12 @@ class ActionEscape(Action):
 			return [SlotSet("current_monster", None)]
 		current_monster = tracker.get_slot("current_monster")
 		dispatcher.utter_message(text="Oh no, the " + current_monster + " is following you!!")
-		return []
+		life = int(tracker.get_slot("life"))
+		life -= 1
+		if life == 0 :
+			dispatcher.utter_message(template="utter_lose")
+			return [Restarted()]
+		return [SlotSet("next_action", None), SlotSet("life", life)]
 
 
 class MoveForm(FormAction):
@@ -172,18 +310,20 @@ class MoveForm(FormAction):
 
 	@staticmethod
 	def required_slots(tracker: Tracker) -> List[Text]:
-		if not tracker.get_slot("object"):
+		if tracker.get_slot("object"):
+			return []
+		else :
 			return ["direction"]
-		return []
 
 	def slot_mappings(self) -> Dict[Text, Union[Dict, List[Dict]]]:
 		return {
-			"direction": self.from_entity(entity="direction"), ##??? Left/Right/... but also objects?? use intents???
+			"direction": self.from_entity(entity="direction"),
+			"object": self.from_entity(entity="object"),
 		}
+    
+	def validate_direction(self, value, dispatcher, tracker, domain):
+		return {"direction": value, "object": None}
 
-#	def validate_direction(self, value, dispatcher, tracker, domain):
-#		#####
-#		return {"direction": value}
 
 	def submit(
 		self,
@@ -192,12 +332,15 @@ class MoveForm(FormAction):
 		domain: Dict[Text, Any],
 	) -> List[Dict]:
 		next_action = "move" 
+		returned = []
 		if tracker.get_slot("direction"):
-			next_action += " " + tracker.get_slot("direction")
+			next_action += " " + str(tracker.get_slot("direction"))
+			returned.append(FollowupAction("action_move"))
 		if tracker.get_slot("object"):
-			next_action += " to " + tracker.get_slot("object")
-		dispatcher.utter_message(text="Do you want to " + next_action + "?")
-		return [SlotSet("next_action", next_action)]
+			next_action += " to " + str(tracker.get_slot("object"))
+			returned.append(FollowupAction("action_moveto"))
+		returned.append(SlotSet("next_action", next_action))
+		return returned
     
     
 class FightForm(FormAction):
@@ -207,19 +350,29 @@ class FightForm(FormAction):
 
 	@staticmethod
 	def required_slots(tracker: Tracker) -> List[Text]:
-		return ["fight_with"]
+		return ["current_monster", "fight_with"]
 
 	def slot_mappings(self) -> Dict[Text, Union[Dict, List[Dict]]]:
 		return {
 			"fight_with": self.from_entity(entity="fight_with"),
+			"current_monster": self.from_entity(entity="current_monster"),
 		}
 		
 	def validate_fight_with(self, value, dispatcher, tracker, domain):
 		if value in tracker.get_slot("weapons"):
 			return {"fight_with": value}
 		else:
-			dispatcher.utter_message(text="You don't have a " + value + "please choose a weapon.")
-            
+			dispatcher.utter_message(text="You don't have a " + value + ", please choose a weapon.")
+			return {"fight_with": None}
+
+	def validate_current_monster(self, value, dispatcher, tracker, domain):
+		user, room = get_current_user_room(tracker)
+		if value in room.found_monsters:
+			return {"current_monster": value}
+		else :
+			dispatcher.utter_message(text="There is no " + value + " in this room.")
+			return {"current_monster": None}
+
 	def submit(
 		self,
 		dispatcher: CollectingDispatcher,
@@ -227,5 +380,4 @@ class FightForm(FormAction):
 		domain: Dict[Text, Any],
 	) -> List[Dict]:
 		next_action = "fight with " +  tracker.get_slot("fight_with")
-		dispatcher.utter_message(template="utter_confirm")
-		return [SlotSet("next_action", next_action)]
+		return [SlotSet("next_action", next_action), FollowupAction("action_fight")]

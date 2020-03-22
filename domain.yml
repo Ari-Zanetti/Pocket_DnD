@@ -6,13 +6,13 @@ slots:
   user:
     type: unfeaturized
     initial_value: 0
+  life:
+    type: unfeaturized
+    initial_value: 3
   name:
     type: unfeaturized
   n_rooms:
     type: unfeaturized
-  level:
-    type: unfeaturized
-    initial_value: 0
   weapons:
     type: list
     initial_value: []
@@ -37,8 +37,11 @@ intents:
   - affirm
   - deny
   - inform
-  - new_room
+  - explore
+  - move
+  - fight
   - escape
+  - out_of_scope
   - move_form:
       use_entities: []
   - fight_form:
@@ -48,7 +51,6 @@ entities:
   - user
   - name
   - n_rooms
-  - level
   - weapons
   - current_room
   - current_monster
@@ -65,13 +67,16 @@ actions:
   - fight_form
   - utter_next_action
   - action_escape
-  - action_newroom
+  - action_fight
+  - action_explore
+  - action_moveto
   - utter_ask_direction
   - utter_ask_fight_with
+  - utter_lose
 
 templates:
   utter_greet:
-  - text: "Welcome to the {name}! To win the game, you will have to survive the {n_rooms} rooms and find the exit. To move, just specify where you want to go, for example left, right, forward, or say the name of a room or object. Be careful, you may find monsters, but also treasures! You can always search the room before you enter it. Any object you find can later be used to fight. Good luck! What is your first move?"
+  - text: "Welcome to the {name}! To win the game, you will have to survive and find the exit. To move, just specify where you want to go, for example left, right, forward, or say the name of a room or object. Be careful, you may find monsters, but also treasures! You can always search the room before you enter it and fight the monsters, if you have already collected a weapon, otherwise try to escape. Good luck! What is your first move?"
   
   utter_next_action:
   - text: "What do you want to do?"
@@ -80,10 +85,16 @@ templates:
   - text: "Sorry, I don’t understand."
   
   utter_ask_direction:
-  - text: "Where do you want to go?"
+  - text: "In which direction do you want to go?"
+  
+  utter_ask_current_monster:
+  - text: "Who do you want to fight?"
   
   utter_ask_fight_with:
-  - text: "Choose a weapon to fight!"
+  - text: "Choose your weapon!"
+    
+  utter_lose:
+  - text: "Oh no, it looks like you have lost :("
   
   utter_confirm:
   - text: "Do you want to {next_action}?"
