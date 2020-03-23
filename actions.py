@@ -17,11 +17,11 @@ adjectives = ["Occult", "Forsaken", "Ancient", "Enchanted", "Crystal", "Haunted"
 nouns = ["Dungeon", "Forest", "Catacombs", "Pit", "Tomb", "Cavern", "Tunnel", "Mine", "Vault", "Crypt"]
 
 weapon_adjectives = ["Twilight", "Lone Victory", "Silence", "Oblivion", "Eternal Bloodlust", "Shadows", "Assassin", "Oracle", "Timeless Battle"]
-weapon_nouns = ["Axe", "Bow", "Sword", "Dagger", "Rifle", "Shotgun", "Hammer", "Scythe", "Lasso", "Spear"]
+weapon_nouns = ["Bow", "Sword", "Dagger", "Rifle", "Shotgun", "Hammer", "Scythe", "Lasso", "Spear"]
 
 monsters = ["troll", "vampire", "demon"]
 
-MAX_ROOMS = 6
+MAX_ROOMS = 5
 
 MAX_MONSTERS = 2
 MAX_TREASURES = 3
@@ -143,31 +143,35 @@ class ActionMoveTo(Action):
 		current_room = tracker.get_slot("current_room")
 		value = tracker.get_slot("object")
 		# Check if it is a treasure or monster in the room
-		if value == "monster":
-			if len(room.found_monsters) > 0:
-				current_monster = room.found_monsters[0]
-				room.monsters -= 1
-				dispatcher.utter_message(text="You reach a " + current_monster+ ". What do you do?")
-				returned.append(SlotSet("current_monster", current_monster))
+		if isinstance(value,str) and not value.isnumeric():
+			if value.lower() == "monster":
+				if len(room.found_monsters) > 0:
+					current_monster = room.found_monsters[0]
+					room.monsters -= 1
+					dispatcher.utter_message(text="You reach a " + current_monster+ ". What do you do?")
+					returned.append(SlotSet("current_monster", current_monster))
+				else:
+					dispatcher.utter_message(text="You don't see any monster here.")
+				return returned
+			elif value.lower() == "treasure":
+				if len(room.found_treasures) > 0:
+					current_treasure = room.found_treasures.pop(0)
+					room.treasures -= 1
+					user.weapons.append(current_treasure)
+					dispatcher.utter_message(text="<speak><emphasis level='strong'>You now have the "+ current_treasure + ".</emphasis><break time='0.1'/> What do you want to do?</speak>")
+					returned.append(SlotSet("weapons", user.weapons))
+				else:
+					dispatcher.utter_message(text="You don't see any treasure here.")
+				return returned
+			elif value.lower() == "next":
+				value = room.next[-1] if len(room.next) > 0 else 0
+			elif value.lower() == "previous":
+				value = room.previous
+				if value is None:
+					dispatcher.utter_message(text="This is the first room!")
+					return returned
 			else:
-				dispatcher.utter_message(text="You don't see any monster here.")
-			return returned
-		elif value == "treasure":
-			if len(room.found_treasures) > 0:
-				current_treasure = room.found_treasures.pop(0)
-				room.treasures -= 1
-				user.weapons.append(current_treasure)
-				dispatcher.utter_message(text="You now have the "+ current_treasure + ". What do you want to do?")
-				returned.append(SlotSet("weapons", user.weapons))
-			else:
-				dispatcher.utter_message(text="You don't see any treasure here.")
-			return returned
-		elif value == "next":
-			value = room.next[0] if len(room.next) > 0 else 0
-		elif value == "previous":
-			value = room.previous
-			if value is None:
-				dispatcher.utter_message(text="This is the first room!")
+				dispatcher.utter_message(text="You can't go here, what do you want to do?")
 				return returned
 		new_room = None
 		reachable_rooms = []
@@ -180,10 +184,10 @@ class ActionMoveTo(Action):
 			return returned
 
 		if str(value) == str(user.n_rooms):
-			dispatcher.utter_message(text="You have reached the final room! You win!!")
+			dispatcher.utter_message(text="<speak><emphasis level ='moderate'>You have reached the final room! <prosody pitch='high'>You win!!</prosody></emphasis></speak>")
 			return [Restarted()]
 		else:
-			dispatcher.utter_message(text="Welcome to room n. " + str(value) + ", what do you want to do?")
+			dispatcher.utter_message(text="Welcome to room number " + str(value) + ", what do you want to do?")
 		returned.append(SlotSet("current_room", value))
 		return returned
 
@@ -203,7 +207,7 @@ class ActionMove(Action):
 			dispatcher.utter_message(text="You encountered a " + result + " what do you want to do?")
 			slots.append(SlotSet("current_monster", result))
 		elif choice == EXIT:
-			dispatcher.utter_message(text="You found the door to room n. " + str(result) + ". What do you want to do?")
+			dispatcher.utter_message(text="You found the door to room number " + str(result) + ". What do you want to do?")
 			slots.append(SlotSet("object", result))
 		else:
 			slots.append(SlotSet("object", None))
@@ -241,7 +245,31 @@ class ActionExplore(Action):
 		if (revealed_monsters == 0 and revealed_treasures == 0 and revealed_doors == 0):
 			dispatcher.utter_message(text="There is a thick fog in the room, you can't see anything.")
 		else:
-			dispatcher.utter_message(text="You can see " + str(revealed_monsters) + " monsters, " + str(revealed_treasures) + " treasures, and "+ str(revealed_doors) + " doors.")
+			message = "You can see "
+			comma = False
+			if int(revealed_monsters) > 0:
+				comma = True
+				if int(revealed_monsters) > 1:
+					message += str(revealed_monsters) + " monsters"
+				else:
+					message+="1 monster"
+			if int(revealed_treasures) > 0:
+				if comma:
+					message += ", "    
+				comma = True
+				if int(revealed_treasures) > 1:
+					message += str(revealed_treasures) + " treasures"
+				else:
+					message+="1 treasure"
+			if int(revealed_doors) > 0:
+				if comma:
+					message += ", "    
+				if int(revealed_doors) > 1:
+					message += str(revealed_doors) + " doors"
+				else:
+					message+="1 door"
+			message +="."
+			dispatcher.utter_message(text=message)
 		return [SlotSet("next_action", None)]
 
 
@@ -266,14 +294,19 @@ class ActionFight(Action):
 			else:
 				room.found_monsters.remove(monster)
 			returned.append(SlotSet("current_monster", None))
+			returned.append(SlotSet("fight_with", None))
 		else :
 			life -= 1
 			if life == 0 :
 				dispatcher.utter_message(template="utter_lose")
 				return [Restarted()]
 			lose_weapon = random_bool()
-			message = "The monster hits you, you now have " + str(life) + " lives"
-			if lose_weapon:
+			message = "The monster hits you, you now have "
+			if int(life) > 1:
+				message += str(life) + " lives"
+			elif int(life) == 1:
+				message += "1 life"
+			if weapon in all_weapons and lose_weapon:
 				message += " and you lost your " + weapon
 				all_weapons.remove(weapon)
 				returned.append(SlotSet("weapons", all_weapons))
@@ -291,15 +324,23 @@ class ActionEscape(Action):
 
 	def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 		if random_bool():
-			dispatcher.utter_message(text="Nice escape!")
+			dispatcher.utter_message(text="<speak><emphasis level='strong'>Nice escape!</emphasis></speak>")
 			return [SlotSet("current_monster", None)]
 		current_monster = tracker.get_slot("current_monster")
-		dispatcher.utter_message(text="Oh no, the " + current_monster + " is following you!!")
+		message = "Oh no, the " + current_monster + " is following you!!"
 		life = int(tracker.get_slot("life"))
 		life -= 1
 		if life == 0 :
-			dispatcher.utter_message(template="utter_lose")
+			message += " You don't have any more lives. You lost!"
+			dispatcher.utter_message(text=message)
 			return [Restarted()]
+		else:
+			message+= " You now have "
+		if int(life) > 1:
+			message += str(life) + " lives"
+		elif int(life) == 1:
+			message += "1 life."
+		dispatcher.utter_message(text=message)
 		return [SlotSet("next_action", None), SlotSet("life", life)]
 
 
@@ -341,7 +382,7 @@ class MoveForm(FormAction):
 			returned.append(FollowupAction("action_moveto"))
 		returned.append(SlotSet("next_action", next_action))
 		return returned
-    
+        
     
 class FightForm(FormAction):
 
@@ -357,10 +398,14 @@ class FightForm(FormAction):
 			"fight_with": self.from_entity(entity="fight_with"),
 			"current_monster": self.from_entity(entity="current_monster"),
 		}
-		
+    
 	def validate_fight_with(self, value, dispatcher, tracker, domain):
-		if value in tracker.get_slot("weapons"):
-			return {"fight_with": value}
+		weapon = None
+		for weapon_name in tracker.get_slot("weapons"):
+			if value.lower() == weapon_name.lower():
+				weapon = value
+		if weapon is not None:
+			return {"fight_with": weapon}
 		else:
 			dispatcher.utter_message(text="You don't have a " + value + ", please choose a weapon.")
 			return {"fight_with": None}

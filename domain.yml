@@ -76,7 +76,7 @@ actions:
 
 templates:
   utter_greet:
-  - text: "Welcome to the {name}! To win the game, you will have to survive and find the exit. To move, just specify where you want to go, for example left, right, forward, or say the name of a room or object. Be careful, you may find monsters, but also treasures! You can always search the room before you enter it and fight the monsters, if you have already collected a weapon, otherwise try to escape. Good luck! What is your first move?"
+  - text: "<speak><emphasis level='strong'>Welcome to the {name}!</emphasis>To win the game, <break time='0.1'/>you will have to survive and find the exit. To move, <prosody rate='110%'>just specify where you want to go,</prosody> for example left, right, forward, <break time='0.1'/>or say the name of a room or object. Be careful, you may find monsters, but also treasures! <emphasis level='moderate'>You can always search the room before you enter it </emphasis> and fight the monsters, <prosody rate='110%' pitch='low'> if you have already collected a weapon,</prosody> otherwise try to escape.<prosody pitch='high'> Good luck!</prosody> What is your first move?</speak>"
   
   utter_next_action:
   - text: "What do you want to do?"
@@ -91,10 +91,10 @@ templates:
   - text: "Who do you want to fight?"
   
   utter_ask_fight_with:
-  - text: "Choose your weapon!"
+  - text: "<speak><emphasis level='strong'>Choose your weapon!</emphasis></speak>"
     
   utter_lose:
-  - text: "Oh no, it looks like you have lost :("
+  - text: "<speak><prosody rate = '95%' pitch ='low'>Oh no, </prosody> it looks like you have lost!</speak>"
   
   utter_confirm:
   - text: "Do you want to {next_action}?"
