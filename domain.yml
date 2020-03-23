@@ -41,18 +41,12 @@ intents:
   - move
   - fight
   - escape
-  - out_of_scope
   - move_form:
       use_entities: []
   - fight_form:
       use_entities: []
 
 entities:
-  - user
-  - name
-  - n_rooms
-  - weapons
-  - current_room
   - current_monster
   - direction
   - fight_with
@@ -60,20 +54,21 @@ entities:
   - next_action
   
 actions:
-  - action_generate_labyrinth
   - utter_greet
-  - action_move
+  - utter_next_action
+  - utter_lose
   - move_form
   - fight_form
-  - utter_next_action
+  - utter_ask_direction
+  - utter_ask_fight_with
+  - utter_ask_current_monster
+  - action_generate_labyrinth
+  - action_move
+  - action_moveto
   - action_escape
   - action_fight
   - action_explore
-  - action_moveto
-  - utter_ask_direction
-  - utter_ask_fight_with
-  - utter_lose
-
+  
 templates:
   utter_greet:
   - text: "<speak><emphasis level='strong'>Welcome to the {name}!</emphasis>To win the game, <break time='0.1'/>you will have to survive and find the exit. To move, <prosody rate='110%'>just specify where you want to go,</prosody> for example left, right, forward, <break time='0.1'/>or say the name of a room or object. Be careful, you may find monsters, but also treasures! <emphasis level='moderate'>You can always search the room before you enter it </emphasis> and fight the monsters, <prosody rate='110%' pitch='low'> if you have already collected a weapon,</prosody> otherwise try to escape.<prosody pitch='high'> Good luck!</prosody> What is your first move?</speak>"
@@ -95,9 +90,6 @@ templates:
     
   utter_lose:
   - text: "<speak><prosody rate = '95%' pitch ='low'>Oh no, </prosody> it looks like you have lost!</speak>"
-  
-  utter_confirm:
-  - text: "Do you want to {next_action}?"
       
 session_config:
   session_expiration_time: 60
