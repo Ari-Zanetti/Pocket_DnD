@@ -7,5 +7,10 @@ pipeline: supervised_embeddings
 # https://rasa.com/docs/rasa/core/policies/
 policies:
   - name: AugmentedMemoizationPolicy
-    max_history: 5
+    max_history: 3
   - name: MappingPolicy
+  - name: FormPolicy
+  - name: FallbackPolicy
+    nlu_threshold: 0.3
+    core_threshold: 0.3
+    fallback_action_name: "action_default_fallback"
