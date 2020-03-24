@@ -374,12 +374,12 @@ class MoveForm(FormAction):
 	) -> List[Dict]:
 		next_action = "move" 
 		returned = []
-		if tracker.get_slot("direction"):
-			next_action += " " + str(tracker.get_slot("direction"))
-			returned.append(FollowupAction("action_move"))
-		if tracker.get_slot("object"):
+		if tracker.get_slot("object") is not None:
 			next_action += " to " + str(tracker.get_slot("object"))
 			returned.append(FollowupAction("action_moveto"))
+		elif tracker.get_slot("direction"):
+			next_action += " " + str(tracker.get_slot("direction"))
+			returned.append(FollowupAction("action_move"))
 		returned.append(SlotSet("next_action", next_action))
 		return returned
         
